@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -8,21 +7,26 @@ public class ProgramManager : MonoBehaviour
 {
     [SerializeField] private GameObject planeMP;
     [SerializeField] private Camera ARCamera;
+    [SerializeField] GameObject maketShell;
+    [SerializeField] private GameObject EndText;
 
     private ARRaycastManager arrm;
     private Vector2 touchPosition;
     public bool ChooseObject = false;
     public bool rotate;
+    public bool recharging;
     public GameObject objSpawn;
     public GameObject _scrollView;
     private GameObject _selectedObject;
     public Quaternion yRotation;
+    public int strikes;
 
     List<ARRaycastHit> hits = new List<ARRaycastHit>();
 
     void Start()
     {
         arrm = FindObjectOfType<ARRaycastManager>();
+        EndText.SetActive(false);
         planeMP.SetActive(false);
         _scrollView.SetActive(false);
     }
@@ -35,6 +39,20 @@ public class ProgramManager : MonoBehaviour
             ShowMarkerAndSetObject();
         }
         MoveObjectAndRotate();
+
+        if(strikes>2)
+        {
+            EndText.SetActive(true);
+        }
+
+        if(recharging)
+        {
+            maketShell.SetActive(false);
+        }
+        else
+        {
+            maketShell.SetActive(true);
+        }
     }
     void ShowMarkerAndSetObject()
     {
@@ -50,6 +68,7 @@ public class ProgramManager : MonoBehaviour
         if (Input.touchCount > 0 && Input.touches[0].phase == TouchPhase.Began)
         {
             Instantiate(objSpawn, hits[0].pose.position, objSpawn.transform.rotation);
+            maketShell = GameObject.Find("MaketShell");
             ChooseObject = false;
             planeMP.SetActive(false);
         }
