@@ -82,7 +82,7 @@ public class ProgramManager : MonoBehaviour
             {
                 if (rotate)
                 {
-                    yRotation = Quaternion.Euler(0f, touch.deltaPosition.x * 0.1f, 0f);
+                    yRotation = Quaternion.Euler(0f, -touch.deltaPosition.x * 0.1f, 0f);
                     _selectedObject.transform.rotation = yRotation * _selectedObject.transform.rotation;
                 }
                 else
@@ -92,9 +92,33 @@ public class ProgramManager : MonoBehaviour
                 }
             }
 
-            if(touch.phase == TouchPhase.Ended)
+            if(Input.touchCount == 2)
             {
-                if(_selectedObject.CompareTag("Selected"))
+                Touch touch1 = Input.touches[0];
+                Touch touch2 = Input.touches[1];
+
+                if(touch1.phase == TouchPhase.Moved || touch2.phase == TouchPhase.Moved)
+                {
+                    float distanceBetweenTouches = Vector2.Distance(touch1.position, touch2.position);
+                    float prevDistBetwTouch = Vector2.Distance(touch1.position - touch1.deltaPosition, touch2.position - touch2.deltaPosition);
+                    float delta = distanceBetweenTouches - prevDistBetwTouch;
+
+                    if(Mathf.Abs(delta) > 0)
+                    {
+                        delta *= 0.1f;
+                    }
+                    else
+                    {
+                        distanceBetweenTouches = delta = 0;
+                    }
+                    yRotation = Quaternion.Euler(0f, -touch.deltaPosition.x * delta, 0f);
+                    _selectedObject.transform.rotation = yRotation * _selectedObject.transform.rotation;
+                }
+            }
+
+            if (touch.phase == TouchPhase.Ended)
+            {
+                if (_selectedObject.CompareTag("Selected"))
                 {
                     _selectedObject.tag = "Unselected";
                 }
