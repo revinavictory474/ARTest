@@ -12,9 +12,11 @@ public class ProgramManager : MonoBehaviour
     private ARRaycastManager arrm;
     private Vector2 touchPosition;
     public bool ChooseObject = false;
+    public bool rotate;
     public GameObject objSpawn;
     public GameObject _scrollView;
     private GameObject _selectedObject;
+    public Quaternion yRotation;
 
     List<ARRaycastHit> hits = new List<ARRaycastHit>();
 
@@ -31,8 +33,8 @@ public class ProgramManager : MonoBehaviour
         if (ChooseObject)
         {
             ShowMarkerAndSetObject();
-
         }
+        MoveObjectAndRotate();
     }
     void ShowMarkerAndSetObject()
     {
@@ -52,7 +54,7 @@ public class ProgramManager : MonoBehaviour
             planeMP.SetActive(false);
         }
     }
-    void MoveObject()
+    void MoveObjectAndRotate()
     {
         if(Input.touchCount > 0)
         {
@@ -74,11 +76,20 @@ public class ProgramManager : MonoBehaviour
                 }
             }
 
-            if(touch.phase == TouchPhase.Moved)
+            _selectedObject = GameObject.FindWithTag("Selected");
+
+            if (touch.phase == TouchPhase.Moved && Input.touchCount == 1)
             {
-                arrm.Raycast(touchPosition, hits, TrackableType.Planes);
-                _selectedObject = GameObject.FindWithTag("Selected");
-                _selectedObject.transform.position = hits[0].pose.position;
+                if (rotate)
+                {
+                    yRotation = Quaternion.Euler(0f, touch.deltaPosition.x * 0.1f, 0f);
+                    _selectedObject.transform.rotation = yRotation * _selectedObject.transform.rotation;
+                }
+                else
+                {
+                    arrm.Raycast(touchPosition, hits, TrackableType.Planes);
+                    _selectedObject.transform.position = hits[0].pose.position;
+                }
             }
 
             if(touch.phase == TouchPhase.Ended)

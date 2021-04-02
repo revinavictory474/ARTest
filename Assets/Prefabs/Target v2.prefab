@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 3103446278670489684}
   m_Layer: 0
   m_Name: Target v2
-  m_TagString: Unsecelted
+  m_TagString: Unselected
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
